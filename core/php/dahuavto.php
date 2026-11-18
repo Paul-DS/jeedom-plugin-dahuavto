@@ -44,6 +44,7 @@ if (isset($result['devices'])) {
 				'page' => 'dahuavto',
 				'message' => '',
 			));
+			continue;
 		}
 
         foreach ($dahuavto->getCmd('info') as $cmd) {
