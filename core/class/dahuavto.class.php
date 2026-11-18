@@ -191,6 +191,7 @@ class dahuavto extends eqLogic {
         $unlocked->setTemplate('mobile','lock');
         $unlocked->setDisplay('invertBinary', 1);
         $unlocked->setIsVisible(0);
+        $unlocked->setConfiguration('repeatEventManagement', 'always');
         $unlocked->save();
 
         $unlock = $this->getCmd(null, 'unlock' . $index);
