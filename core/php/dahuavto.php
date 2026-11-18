@@ -44,9 +44,16 @@ if (isset($result['devices'])) {
 				'page' => 'dahuavto',
 				'message' => '',
 			));
+			continue;
 		}
 
-        foreach ($dahuavto->getCmd('info') as $cmd) {
+		// Update the door state last, so scenarios triggered by it read the current access method
+		$cmds = $dahuavto->getCmd('info');
+		usort($cmds, function ($a, $b) {
+			return (strpos($a->getLogicalId(), 'unlocked') === 0) - (strpos($b->getLogicalId(), 'unlocked') === 0);
+		});
+
+        foreach ($cmds as $cmd) {
             $logicalId = $cmd->getLogicalId();
 			if ($logicalId != '' && array_key_exists($logicalId, $data)) {
                 log::add('dahuavto', 'debug', 'Update the command ' . $logicalId . ' with value ' . $data[$logicalId]);

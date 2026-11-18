@@ -42,6 +42,8 @@
     "plugins\/dahuavto\/core\/class\/dahuavto.class.php": {
         "Appel": "Calling",
         "Porte": "Door",
-        "Déverouiller": "Unlock door"
+        "Déverouiller": "Unlock door",
+        "Méthode ouverture": "Access method",
+        "Utilisateur ID": "User ID"
     }
 }

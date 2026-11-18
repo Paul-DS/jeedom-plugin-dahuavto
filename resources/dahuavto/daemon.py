@@ -25,6 +25,7 @@ DEVICES = {}
 class DahuaVTOManager:
     def __init__(self, device):
         self._device = device
+        self._resetTimers = {}
 
     def initialize(self):
         self._running = True
@@ -75,11 +76,19 @@ class DahuaVTOManager:
             # "Index" is 0 or 1
             # 'unlocked' command is 1 or 2
             commandName = 'unlocked2' if message["Index"] == 1 else 'unlocked1'
-            self._send_change({ commandName: 1 })
-            Timer(
+            self._send_change({
+                'accessMethod': messageData.get('Method', ''),
+                'userId': messageData.get('UserID') or '',
+                commandName: 1,
+            })
+            # Restart the reset delay on each opening
+            if commandName in self._resetTimers:
+                self._resetTimers[commandName].cancel()
+            self._resetTimers[commandName] = Timer(
                 10,
                 lambda: self._send_change({ commandName: 0 }),
-            ).start()
+            )
+            self._resetTimers[commandName].start()
 
     def _send_change(self, params):
         JEEDOM_COM.add_changes("devices::{}".format(self._device['id']), params),

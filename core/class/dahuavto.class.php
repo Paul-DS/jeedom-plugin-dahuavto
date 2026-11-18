@@ -161,6 +161,9 @@ class dahuavto extends eqLogic {
         $calling->setSubType('binary');
         $calling->save();
 
+        $this->createAccessInfoCommand('accessMethod', __('Méthode ouverture', __FILE__), 'numeric');
+        $this->createAccessInfoCommand('userId', __('Utilisateur ID', __FILE__), 'string');
+
         $oldUnlocked = $this->getCmd(null, 'unlocked');
         if (is_object($oldUnlocked)) {
             $oldUnlocked->remove();
@@ -177,6 +180,20 @@ class dahuavto extends eqLogic {
         $this->sendToDaemon('add');
     }
 
+    private function createAccessInfoCommand($logicalId, $name, $subType) {
+        $cmd = $this->getCmd(null, $logicalId);
+        if (!is_object($cmd)) {
+            $cmd = new dahuavtoCmd();
+            $cmd->setName($name);
+        }
+        $cmd->setLogicalId($logicalId);
+        $cmd->setEqLogic_id($this->getId());
+        $cmd->setType('info');
+        $cmd->setSubType($subType);
+        $cmd->setConfiguration('repeatEventManagement', 'always');
+        $cmd->save();
+    }
+
     private function createDoorCommands($index) {
         $unlocked = $this->getCmd(null, 'unlocked' . $index);
         if (!is_object($unlocked)) {
@@ -191,6 +208,7 @@ class dahuavto extends eqLogic {
         $unlocked->setTemplate('mobile','lock');
         $unlocked->setDisplay('invertBinary', 1);
         $unlocked->setIsVisible(0);
+        $unlocked->setConfiguration('repeatEventManagement', 'always');
         $unlocked->save();
 
         $unlock = $this->getCmd(null, 'unlock' . $index);
@@ -259,19 +277,24 @@ class dahuavtoCmd extends cmd {
                 if ($conf['host'] && $conf['username'] && $conf['password']) {
                     $index = $this-> getLogicalId() == 'unlock2' ? 2 : 1;
 
-                    log::add(__CLASS__, 'info', 'Unlock door...('. $conf['host'] . ')');
+                    log::add('dahuavto', 'info', 'Unlock door ' . $index . '...('. $conf['host'] . ')');
         
                     $ch = curl_init();
                     curl_setopt($ch, CURLOPT_URL, "http://{$conf['host']}/cgi-bin/accessControl.cgi?action=openDoor&channel={$index}&UserID=101&Type=Remote");
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
                     curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
                     curl_setopt($ch, CURLOPT_USERPWD, $conf['username'] . ":" . $conf['password']);
+                    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
                     $result = curl_exec($ch);
+                    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
                     if ($result === FALSE) {
-                        log::add(__CLASS__, 'error', 'Door open failed');
+                        log::add('dahuavto', 'error', 'Door open failed: ' . curl_error($ch));
+                    }
+                    else if ($httpCode != 200 || trim($result) != 'OK') {
+                        log::add('dahuavto', 'error', 'Door open failed (HTTP ' . $httpCode . '): ' . trim($result));
                     }
                     else {
-                        log::add(__CLASS__, 'info', 'Door opened');
+                        log::add('dahuavto', 'info', 'Door opened');
                     }
                 }
 
