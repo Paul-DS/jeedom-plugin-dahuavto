@@ -259,19 +259,24 @@ class dahuavtoCmd extends cmd {
                 if ($conf['host'] && $conf['username'] && $conf['password']) {
                     $index = $this-> getLogicalId() == 'unlock2' ? 2 : 1;
 
-                    log::add(__CLASS__, 'info', 'Unlock door...('. $conf['host'] . ')');
+                    log::add('dahuavto', 'info', 'Unlock door ' . $index . '...('. $conf['host'] . ')');
         
                     $ch = curl_init();
                     curl_setopt($ch, CURLOPT_URL, "http://{$conf['host']}/cgi-bin/accessControl.cgi?action=openDoor&channel={$index}&UserID=101&Type=Remote");
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
                     curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
                     curl_setopt($ch, CURLOPT_USERPWD, $conf['username'] . ":" . $conf['password']);
+                    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
                     $result = curl_exec($ch);
+                    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
                     if ($result === FALSE) {
-                        log::add(__CLASS__, 'error', 'Door open failed');
+                        log::add('dahuavto', 'error', 'Door open failed: ' . curl_error($ch));
+                    }
+                    else if ($httpCode != 200 || trim($result) != 'OK') {
+                        log::add('dahuavto', 'error', 'Door open failed (HTTP ' . $httpCode . '): ' . trim($result));
                     }
                     else {
-                        log::add(__CLASS__, 'info', 'Door opened');
+                        log::add('dahuavto', 'info', 'Door opened');
                     }
                 }
 
