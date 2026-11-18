@@ -161,6 +161,9 @@ class dahuavto extends eqLogic {
         $calling->setSubType('binary');
         $calling->save();
 
+        $this->createAccessInfoCommand('accessMethod', __('Méthode ouverture', __FILE__), 'numeric');
+        $this->createAccessInfoCommand('userId', __('Utilisateur ID', __FILE__), 'string');
+
         $oldUnlocked = $this->getCmd(null, 'unlocked');
         if (is_object($oldUnlocked)) {
             $oldUnlocked->remove();
@@ -175,6 +178,20 @@ class dahuavto extends eqLogic {
         $this->createDoorCommands(2);
 
         $this->sendToDaemon('add');
+    }
+
+    private function createAccessInfoCommand($logicalId, $name, $subType) {
+        $cmd = $this->getCmd(null, $logicalId);
+        if (!is_object($cmd)) {
+            $cmd = new dahuavtoCmd();
+            $cmd->setName($name);
+        }
+        $cmd->setLogicalId($logicalId);
+        $cmd->setEqLogic_id($this->getId());
+        $cmd->setType('info');
+        $cmd->setSubType($subType);
+        $cmd->setConfiguration('repeatEventManagement', 'always');
+        $cmd->save();
     }
 
     private function createDoorCommands($index) {

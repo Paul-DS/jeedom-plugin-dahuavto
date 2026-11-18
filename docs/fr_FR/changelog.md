@@ -1,5 +1,10 @@
 # Changelog plugin Dahua VTO
 
+# 28/10/2026
+
+- Ajout de la commande « Méthode ouverture » donnant le code de la méthode d'ouverture de la porte (badge, code, bouton, à distance...)
+- Ajout de la commande « Utilisateur ID » renseignée à chaque ouverture
+
 # 27/08/2021
 
 - [#4](https://github.com/Paul-DS/jeedom-plugin-dahuavto/issues/4), [#5](https://github.com/Paul-DS/jeedom-plugin-dahuavto/issues/5) Corrections de problèmes lors de l'installation des dépendances

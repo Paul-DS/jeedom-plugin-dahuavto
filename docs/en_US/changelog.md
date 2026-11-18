@@ -1,5 +1,10 @@
 # Dahua VTO plugin changelog
 
+# 2026-10-28
+
+- Add "Access method" command giving the code of the door opening method (card, code, button, remote...)
+- Add "User ID" command filled on each opening
+
 # 2021-08-27
 
 - [#4](https://github.com/Paul-DS/jeedom-plugin-dahuavto/issues/4), [#5](https://github.com/Paul-DS/jeedom-plugin-dahuavto/issues/5) Fix dependencies installation problems

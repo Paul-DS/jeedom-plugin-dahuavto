@@ -30,4 +30,21 @@ Click on 'Save'. If the information entered is correct, the plugin will retrieve
 
 For the moment, the plugin allows you to retrieve call and door unlocking information, and allows you to unlock the door.
 
+On each opening, the `Access method` command gives the code of the method used by the VTO:
+
+| Code | Method | Checked on |
+|---|---|---|
+| 0 | Code | |
+| 1 | Card | VTO2211G |
+| 2 | Card + code | |
+| 3 | Code + card | |
+| 4 | Remote (Jeedom command, app, indoor monitor...) | VTO2211G |
+| 5 | Exit button | VTO2211G |
+| 6 | Fingerprint | |
+| 15 | Face | |
+
+Unchecked codes may vary depending on the model and firmware. An opening from the Jeedom `Unlock door` command gives code 4.
+
+The `User ID` command gives the user who opened the door. It is empty when the opening does not provide it (exit button, remote opening...).
+
 Do not hesitate to [open a ticket here](https://github.com/Paul-DS/jeedom-plugin-dahuavto/issues) if you want to access other features

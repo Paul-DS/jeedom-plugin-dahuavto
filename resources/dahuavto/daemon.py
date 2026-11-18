@@ -76,7 +76,11 @@ class DahuaVTOManager:
             # "Index" is 0 or 1
             # 'unlocked' command is 1 or 2
             commandName = 'unlocked2' if message["Index"] == 1 else 'unlocked1'
-            self._send_change({ commandName: 1 })
+            self._send_change({
+                'accessMethod': messageData.get('Method', ''),
+                'userId': messageData.get('UserID') or '',
+                commandName: 1,
+            })
             # Restart the reset delay on each opening
             if commandName in self._resetTimers:
                 self._resetTimers[commandName].cancel()
